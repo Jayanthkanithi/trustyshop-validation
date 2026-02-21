@@ -25,7 +25,9 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const existing = prev.find((i) => i.product.id === product.id);
       if (existing) {
         return prev.map((i) =>
-          i.product.id === product.id ? { ...i, quantity: i.quantity + 1 } : i
+          i.product.id === product.id
+            ? { ...i, quantity: Math.min(i.quantity + 1, i.product.stock) }
+            : i
         );
       }
       return [...prev, { product, quantity: 1 }];
@@ -39,7 +41,11 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const updateQuantity = useCallback((productId: string, quantity: number) => {
     if (quantity < 1) return;
     setItems((prev) =>
-      prev.map((i) => (i.product.id === productId ? { ...i, quantity } : i))
+      prev.map((i) =>
+        i.product.id === productId
+          ? { ...i, quantity: Math.min(quantity, i.product.stock) }
+          : i
+      )
     );
   }, []);
 
